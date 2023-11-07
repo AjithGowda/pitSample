@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: Gradle 7.3.3
+Build-JVM: 17.0.8.1 (JetBrains s.r.o. 17.0.8.1+7-b1000.32)
+Version: 1.0.1
+Build-Plugin: Gradle IntelliJ Plugin
+Build-Plugin-Version: 1.13.3
+Build-OS: Windows 10 10.0 amd64
+Build-SDK: IC-231.9011.34
+

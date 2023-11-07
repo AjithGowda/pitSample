@@ -1,0 +1,88 @@
+
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.13.3"
+        classpath "info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.9.0"
+    }
+}
+plugins {
+    id 'java'
+    id "com.jfrog.bintray" version "1.8.4"
+}
+apply plugin: "org.jetbrains.intellij"
+apply plugin: 'maven-publish'
+apply plugin: "groovy"
+
+group 'org.jetbrains.intellij.deps'
+version '1.0.1'
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'org.pitest:pitest-junit5-plugin:1.1.2'
+    testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
+    testImplementation("org.codehaus.groovy:groovy-all:3.0.13")
+
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.java
+}
+
+
+
+artifacts {
+    archives sourceJar
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId 'org.jetbrains.intellij.deps'
+            artifactId 'java-compatibility'
+            version '1.0.1'
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+
+    publish = true
+
+    pkg {
+        repo = 'intellij-third-party-dependencies'
+        name = 'java-compatibility'
+        userOrg = 'jetbrains'
+
+        version {
+            name = '1.0.1'
+        }
+    }
+
+    publications = ['MyPublication']
+}
+intellij{
+    version.set("231.9011.34")
+}
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+apply from: "$projectDir/gradle/pitest.gradle"
